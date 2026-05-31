@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stock de Pintura — Delack</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0f0f0f;--surface:#1a1a1a;--surface2:#242424;--border:#2e2e2e;--text:#f0f0f0;--text-muted:#666;--accent:#e8c84a;--danger:#e84a4a;--success:#4ae89a;--radius:10px;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;}
+header{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 18px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:100;}
+header h1{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:2px;color:var(--accent);}
+header span{font-size:11px;color:var(--text-muted);margin-left:auto;}
+.container{max-width:960px;margin:0 auto;padding:18px 13px;}
+.tabs{display:flex;gap:4px;background:var(--surface);border-radius:var(--radius);padding:4px;margin-bottom:18px;}
+.tab{flex:1;padding:9px;border:none;border-radius:8px;background:transparent;color:var(--text-muted);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;transition:all 0.2s;text-align:center;}
+.tab.active{background:var(--accent);color:#000;}
+.panel{display:none;}.panel.active{display:block;}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:16px;}
+.card h2{font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:1px;margin-bottom:13px;color:var(--accent);}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
+@media(max-width:600px){.form-grid{grid-column:1fr;}}
+.field{display:flex;flex-direction:column;gap:5px;}
+.field.full{grid-column:1/-1;}
+label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.8px;color:var(--text-muted);}
+input,select,textarea{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:8px 10px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;transition:border-color 0.2s;width:100%;}
+input:focus,select:focus{border-color:var(--accent);}
+.btn{padding:9px 16px;border:none;border-radius:8px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;transition:all 0.15s;}
+.btn-primary{background:var(--accent);color:#000;width:100%;margin-top:7px;}
+.btn-sm{padding:5px 9px;font-size:11px;border-radius:6px;}
+.btn-danger{background:var(--danger);color:#fff;}
+.btn-success{background:var(--success);color:#000;}
+.btn-ghost{background:var(--surface2);color:var(--text);border:1px solid var(--border);}
+.stock-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:10px;}
+.stock-header{display:flex;align-items:center;gap:10px;margin-bottom:8px;flex-wrap:wrap;}
+.stock-color{width:20px;height:20px;border-radius:50%;border:2px solid var(--border);flex-shrink:0;}
+.stock-nombre{font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--accent);}
+.stock-meta{font-size:11px;color:var(--text-muted);}
+.stock-saldo{font-family:'Bebas Neue',sans-serif;font-size:28px;line-height:1;}
+.barra-bg{height:8px;background:var(--border);border-radius:4px;margin:8px 0;}
+.barra{height:8px;border-radius:4px;transition:width 0.3s;}
+.movimiento-row{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:7px;background:var(--surface2);margin-bottom:5px;flex-wrap:wrap;}
+.mov-tipo{width:6px;height:30px;border-radius:3px;flex-shrink:0;}
+.mov-info{flex:1;min-width:100px;}
+.mov-titulo{font-size:13px;font-weight:600;}
+.mov-det{font-size:11px;color:var(--text-muted);margin-top:2px;}
+.filter-bar{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px;}
+.filter-bar button{padding:4px 10px;border-radius:16px;border:1px solid var(--border);background:var(--surface);color:var(--text-muted);cursor:pointer;font-size:11px;font-family:'DM Sans',sans-serif;transition:all 0.15s;}
+.filter-bar button.active{border-color:var(--accent);color:var(--accent);}
+.empty{text-align:center;padding:32px 18px;color:var(--text-muted);font-size:13px;}
+.alerta-bajo{border-color:var(--danger)!important;}
+.alerta-badge{background:var(--danger);color:#fff;font-size:10px;padding:2px 7px;border-radius:10px;font-weight:600;}
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:200;align-items:flex-start;justify-content:center;padding:16px;overflow-y:auto;}
+.modal.open{display:flex;}
+.modal-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;width:100%;max-width:500px;margin:auto;}
+.modal-box h2{font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--accent);margin-bottom:14px;}
+#loading{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:999;flex-direction:column;gap:10px;}
+.spinner{width:34px;height:34px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 0.8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.resumen-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-bottom:18px;}
+.resumen-chip{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px;text-align:center;}
+.resumen-chip .n{font-family:'Bebas Neue',sans-serif;font-size:26px;color:var(--accent);line-height:1;}
+.resumen-chip .l{font-size:10px;color:var(--text-muted);text-transform:uppercase;margin-top:2px;}
+</style>
+</head>
+<body>
+<div id="loading"><div class="spinner"></div><span style="color:var(--text-muted);font-size:12px;">Conectando...</span></div>
+
+<header>
+  <h1>🎨 Stock de Pintura</h1>
+  <span id="fecha-hoy"></span>
+</header>
+
+<div class="container">
+  <div class="tabs">
+    <button class="tab active" onclick="showTab('stock')">Stock actual</button>
+    <button class="tab" onclick="showTab('movimientos')">Movimientos</button>
+    <button class="tab" onclick="showTab('ingreso')">+ Ingreso</button>
+    <button class="tab" onclick="showTab('salida')">- Salida</button>
+    <button class="tab" onclick="showTab('pinturas')">Pinturas</button>
+  </div>
+
+  <!-- STOCK ACTUAL -->
+  <div class="panel active" id="tab-stock">
+    <div class="resumen-grid" id="resumen-stock"></div>
+    <div class="card">
+      <div class="filter-bar" id="fs-color"></div>
+    </div>
+    <div id="list-stock"></div>
+  </div>
+
+  <!-- MOVIMIENTOS -->
+  <div class="panel" id="tab-movimientos">
+    <div class="card">
+      <div class="filter-bar" id="fm-tipo"></div>
+      <div class="filter-bar" id="fm-pintura"></div>
+    </div>
+    <div id="list-movimientos"></div>
+  </div>
+
+  <!-- INGRESO -->
+  <div class="panel" id="tab-ingreso">
+    <div class="card">
+      <h2>Registrar ingreso de pintura</h2>
+      <div class="form-grid">
+        <div class="field"><label>Fecha</label><input type="date" id="ing-fecha"></div>
+        <div class="field"><label>Pintura</label><select id="ing-pintura"><option value="">— Seleccioná —</option></select></div>
+        <div class="field"><label>Kilos que ingresan</label><input type="number" id="ing-kilos" placeholder="Ej: 100" step="0.01"></div>
+        <div class="field"><label>Lote</label><input type="text" id="ing-lote" placeholder="Ej: L2024-001"></div>
+        <div class="field"><label>Remito / Factura</label><input type="text" id="ing-remito" placeholder="Ej: F-0001"></div>
+        <div class="field"><label>Proveedor</label><input type="text" id="ing-proveedor" placeholder="Ej: Pinturas XYZ"></div>
+        <div class="field full"><label>Observaciones</label><input type="text" id="ing-notas" placeholder="Opcional"></div>
+      </div>
+      <button class="btn btn-primary" onclick="guardarIngreso()">Guardar ingreso</button>
+      <div id="ing-msg" style="display:none;margin-top:9px;font-size:12px;color:var(--success);"></div>
+    </div>
+  </div>
+
+  <!-- SALIDA -->
+  <div class="panel" id="tab-salida">
+    <div class="card">
+      <h2>Registrar salida de pintura</h2>
+      <div class="form-grid">
+        <div class="field"><label>Fecha</label><input type="date" id="sal-fecha"></div>
+        <div class="field"><label>Pintura</label><select id="sal-pintura"><option value="">— Seleccioná —</option></select></div>
+        <div class="field"><label>Kilos que salen</label><input type="number" id="sal-kilos" placeholder="Ej: 20" step="0.01" oninput="actualizarSaldoSalida()"></div>
+        <div class="field">
+          <label>Stock disponible</label>
+          <div id="sal-saldo" style="padding:8px 10px;border-radius:8px;background:var(--surface2);border:1px solid var(--border);font-size:13px;color:var(--text-muted);">Seleccioná una pintura</div>
+        </div>
+        <div class="field"><label>Motivo / Destino</label><input type="text" id="sal-motivo" placeholder="Ej: Trabajo guía 13675"></div>
+        <div class="field full"><label>Observaciones</label><input type="text" id="sal-notas" placeholder="Opcional"></div>
+      </div>
+      <button class="btn btn-primary" onclick="guardarSalida()">Guardar salida</button>
+      <div id="sal-msg" style="display:none;margin-top:9px;font-size:12px;"></div>
+    </div>
+  </div>
+
+  <!-- PINTURAS -->
+  <div class="panel" id="tab-pinturas">
+    <div class="card">
+      <h2>Catálogo de pinturas</h2>
+      <div id="list-pinturas"></div>
+      <div class="card" style="background:var(--surface2);margin-top:12px;">
+        <p style="font-size:11px;font-weight:600;text-transform:uppercase;color:var(--text-muted);margin-bottom:10px;">Agregar nueva pintura</p>
+        <div class="form-grid">
+          <div class="field"><label>Nombre / Color</label><input type="text" id="np-nombre" placeholder="Ej: Blanco satinado"></div>
+          <div class="field"><label>Marca</label><input type="text" id="np-marca" placeholder="Ej: Sinteplast"></div>
+          <div class="field"><label>Código</label><input type="text" id="np-codigo" placeholder="Ej: BL-001"></div>
+          <div class="field"><label>Color (referencia visual)</label><input type="color" id="np-color" value="#f5f5f5" style="height:38px;padding:2px;cursor:pointer;"></div>
+          <div class="field"><label>Stock mínimo (kg)</label><input type="number" id="np-minimo" placeholder="Alerta cuando baje de..." step="0.01"></div>
+          <div class="field full"><label>Observaciones</label><input type="text" id="np-notas" placeholder="Opcional"></div>
+        </div>
+        <button class="btn btn-primary" onclick="agregarPintura()">Agregar pintura</button>
+        <div id="np-msg" style="display:none;margin-top:9px;font-size:12px;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL DETALLE PINTURA -->
+<div class="modal" id="modal-detalle">
+  <div class="modal-box">
+    <h2 id="det-titulo">Detalle</h2>
+    <div id="det-contenido"></div>
+    <button class="btn btn-ghost" style="width:100%;margin-top:12px;" onclick="cerrarModal('modal-detalle')">Cerrar</button>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, doc, onSnapshot, addDoc, updateDoc, deleteDoc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDDTrSQcnN4nSHDwXJpDJq3RK1jrZURr-k",
+  authDomain: "delack-de352.firebaseapp.com",
+  projectId: "delack-de352",
+  storageBucket: "delack-de352.firebasestorage.app",
+  messagingSenderId: "807394903456",
+  appId: "1:807394903456:web:c04da294965f586f70d0c5"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+let _pinturas=[], _movimientos=[];
+let fStockColor='todos', fMovTipo='todos', fMovPintura='todos';
+
+document.getElementById('fecha-hoy').textContent = new Date().toLocaleDateString('es-AR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+document.getElementById('ing-fecha').value = new Date().toISOString().split('T')[0];
+document.getElementById('sal-fecha').value = new Date().toISOString().split('T')[0];
+
+window.showTab=function(tab){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('tab-'+tab).classList.add('active');
+  event.target.classList.add('active');
+  render();
+};
+
+window.cerrarModal=function(id){ document.getElementById(id).classList.remove('open'); };
+
+function getStock(pinturaId){
+  const movs=_movimientos.filter(m=>m.pinturaId===pinturaId);
+  const entradas=movs.filter(m=>m.tipo==='ingreso').reduce((a,m)=>a+(parseFloat(m.kilos)||0),0);
+  const salidas=movs.filter(m=>m.tipo==='salida').reduce((a,m)=>a+(parseFloat(m.kilos)||0),0);
+  return Math.max(0, entradas-salidas);
+}
+
+function populateSelectsPintura(){
+  const opts='<option value="">— Seleccioná —</option>'+_pinturas.map(p=>`<option value="${p.id}">${p.nombre} (${p.marca||'—'}) | ${getStock(p.id).toFixed(1)} kg</option>`).join('');
+  ['ing-pintura','sal-pintura'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el){const prev=el.value;el.innerHTML=opts;if(prev)el.value=prev;}
+  });
+}
+
+window.actualizarSaldoSalida=function(){
+  const pinturaId=document.getElementById('sal-pintura').value;
+  const kilos=parseFloat(document.getElementById('sal-kilos').value)||0;
+  const el=document.getElementById('sal-saldo');
+  if(!pinturaId){el.textContent='Seleccioná una pintura';el.style.color='var(--text-muted)';return;}
+  const stock=getStock(pinturaId);
+  const saldo=stock-kilos;
+  el.textContent=`Stock: ${stock.toFixed(1)} kg${kilos>0?' → Quedarán: '+saldo.toFixed(1)+' kg':''}`;
+  el.style.color=saldo<0?'var(--danger)':saldo===0?'var(--success)':'var(--text)';
+};
+
+document.getElementById('sal-pintura').addEventListener('change', actualizarSaldoSalida);
+
+window.guardarIngreso=async function(){
+  const fecha=document.getElementById('ing-fecha').value;
+  const pinturaId=document.getElementById('ing-pintura').value;
+  const kilos=parseFloat(document.getElementById('ing-kilos').value)||0;
+  const lote=document.getElementById('ing-lote').value.trim();
+  const remito=document.getElementById('ing-remito').value.trim();
+  const proveedor=document.getElementById('ing-proveedor').value.trim();
+  const notas=document.getElementById('ing-notas').value.trim();
+  if(!fecha||!pinturaId||!kilos){alert('Completá fecha, pintura y kilos.');return;}
+  await addDoc(collection(db,'stock_movimientos'),{fecha,pinturaId,tipo:'ingreso',kilos,lote,remito,proveedor,notas,creadoEn:Date.now()});
+  ['ing-kilos','ing-lote','ing-remito','ing-proveedor','ing-notas'].forEach(id=>document.getElementById(id).value='');
+  const msg=document.getElementById('ing-msg');
+  msg.textContent=`✔ Ingreso de ${kilos} kg registrado.`;
+  msg.style.display='block';
+  setTimeout(()=>msg.style.display='none',3000);
+};
+
+window.guardarSalida=async function(){
+  const fecha=document.getElementById('sal-fecha').value;
+  const pinturaId=document.getElementById('sal-pintura').value;
+  const kilos=parseFloat(document.getElementById('sal-kilos').value)||0;
+  const motivo=document.getElementById('sal-motivo').value.trim();
+  const notas=document.getElementById('sal-notas').value.trim();
+  if(!fecha||!pinturaId||!kilos){alert('Completá fecha, pintura y kilos.');return;}
+  const stock=getStock(pinturaId);
+  if(kilos>stock){alert(`No tenés suficiente stock. Disponible: ${stock.toFixed(1)} kg`);return;}
+  await addDoc(collection(db,'stock_movimientos'),{fecha,pinturaId,tipo:'salida',kilos,motivo,notas,creadoEn:Date.now()});
+  ['sal-kilos','sal-motivo','sal-notas'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('sal-saldo').textContent='Seleccioná una pintura';
+  const msg=document.getElementById('sal-msg');
+  msg.style.color='var(--success)';
+  msg.textContent=`✔ Salida de ${kilos} kg registrada.`;
+  msg.style.display='block';
+  setTimeout(()=>msg.style.display='none',3000);
+};
+
+window.agregarPintura=async function(){
+  const nombre=document.getElementById('np-nombre').value.trim();
+  const marca=document.getElementById('np-marca').value.trim();
+  const codigo=document.getElementById('np-codigo').value.trim();
+  const color=document.getElementById('np-color').value;
+  const minimo=parseFloat(document.getElementById('np-minimo').value)||0;
+  const notas=document.getElementById('np-notas').value.trim();
+  const msgEl=document.getElementById('np-msg');
+  if(!nombre){msgEl.style.color='var(--danger)';msgEl.textContent='⚠ Ingresá el nombre.';msgEl.style.display='block';return;}
+  const id='p_'+Date.now();
+  await setDoc(doc(db,'stock_pinturas',id),{id,nombre,marca,codigo,color,minimo,notas,creadoEn:Date.now()});
+  ['np-nombre','np-marca','np-codigo','np-notas'].forEach(i=>document.getElementById(i).value='');
+  document.getElementById('np-minimo').value='';
+  msgEl.style.color='var(--success)';msgEl.textContent=`✔ "${nombre}" agregada.`;msgEl.style.display='block';
+  setTimeout(()=>msgEl.style.display='none',2500);
+};
+
+window.eliminarPintura=async function(id){
+  if(_movimientos.some(m=>m.pinturaId===id)){alert('No podés eliminar una pintura con movimientos registrados.');return;}
+  if(!confirm('¿Eliminar esta pintura?')) return;
+  await deleteDoc(doc(db,'stock_pinturas',id));
+};
+
+window.verDetalle=function(pinturaId){
+  const p=_pinturas.find(x=>x.id===pinturaId);
+  const movs=_movimientos.filter(m=>m.pinturaId===pinturaId).sort((a,b)=>b.creadoEn-a.creadoEn);
+  document.getElementById('det-titulo').textContent=`${p.nombre} — Historial`;
+  document.getElementById('det-contenido').innerHTML=movs.length?movs.map(m=>`
+    <div class="movimiento-row">
+      <div class="mov-tipo" style="background:${m.tipo==='ingreso'?'var(--success)':'var(--danger)'}"></div>
+      <div class="mov-info">
+        <div class="mov-titulo">${m.tipo==='ingreso'?'▲ Ingreso':'▼ Salida'} — ${m.kilos} kg</div>
+        <div class="mov-det">${m.fecha}${m.lote?' | Lote: '+m.lote:''}${m.remito?' | '+m.remito:''}${m.proveedor?' | '+m.proveedor:''}${m.motivo?' | '+m.motivo:''}${m.notas?' | '+m.notas:''}</div>
+      </div>
+    </div>`).join(''):'<p style="color:var(--text-muted);font-size:13px;">Sin movimientos todavía.</p>';
+  document.getElementById('modal-detalle').classList.add('open');
+};
+
+function render(){
+  populateSelectsPintura();
+  renderStock();
+  renderMovimientos();
+  renderPinturas();
+}
+
+function renderStock(){
+  const el=document.getElementById('list-stock');
+  const resEl=document.getElementById('resumen-stock');
+  if(!el) return;
+
+  // chips de filtro
+  document.getElementById('fs-color').innerHTML=
+    `<button class="${fStockColor==='todos'?'active':''}" onclick="setFiltroStock('todos')">Todas</button>`
+    +_pinturas.map(p=>`<button class="${fStockColor===p.id?'active':''}" onclick="setFiltroStock('${p.id}')" style="border-left:3px solid ${p.color||'#888'}">${p.nombre}</button>`).join('');
+
+  let pinturas=_pinturas;
+  if(fStockColor!=='todos') pinturas=pinturas.filter(p=>p.id===fStockColor);
+
+  // resumen global
+  const totalKg=_pinturas.reduce((a,p)=>a+getStock(p.id),0);
+  const bajoStock=_pinturas.filter(p=>p.minimo>0&&getStock(p.id)<p.minimo).length;
+  resEl.innerHTML=`
+    <div class="resumen-chip"><div class="n">${_pinturas.length}</div><div class="l">Pinturas</div></div>
+    <div class="resumen-chip"><div class="n">${totalKg.toFixed(0)}</div><div class="l">Kg total</div></div>
+    ${bajoStock>0?`<div class="resumen-chip" style="border-color:var(--danger)"><div class="n" style="color:var(--danger)">${bajoStock}</div><div class="l">Stock bajo</div></div>`:''}`;
+
+  if(!pinturas.length){el.innerHTML='<div class="empty">No hay pinturas cargadas</div>';return;}
+
+  el.innerHTML=pinturas.map(p=>{
+    const stock=getStock(p.id);
+    const bajoPct=p.minimo>0?Math.min(100,Math.round(stock/p.minimo*100)):100;
+    const isBajo=p.minimo>0&&stock<p.minimo;
+    const movs=_movimientos.filter(m=>m.pinturaId===p.id);
+    const totalEntrado=movs.filter(m=>m.tipo==='ingreso').reduce((a,m)=>a+(parseFloat(m.kilos)||0),0);
+    const pct=totalEntrado>0?Math.min(100,Math.round(stock/totalEntrado*100)):0;
+    return `<div class="stock-card ${isBajo?'alerta-bajo':''}">
+      <div class="stock-header">
+        <div class="stock-color" style="background:${p.color||'#888'}"></div>
+        <span class="stock-nombre">${p.nombre}</span>
+        <span class="stock-meta">${p.marca||'—'}</span>
+        ${p.codigo?`<span class="stock-meta">| Cód: ${p.codigo}</span>`:''}
+        ${isBajo?'<span class="alerta-badge">⚠ Stock bajo</span>':''}
+        <span style="margin-left:auto;font-family:\'Bebas Neue\',sans-serif;font-size:28px;color:${isBajo?'var(--danger)':'var(--success)'};">${stock.toFixed(1)} kg</span>
+      </div>
+      ${p.minimo>0?`<div style="font-size:11px;color:var(--text-muted);margin-bottom:4px;">Mínimo: ${p.minimo} kg</div>`:''}
+      <div class="barra-bg"><div class="barra" style="width:${pct}%;background:${isBajo?'var(--danger)':'var(--success)'}"></div></div>
+      <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;">
+        <button class="btn btn-sm btn-ghost" onclick="verDetalle('${p.id}')">📋 Historial</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+window.setFiltroStock=function(v){fStockColor=v;renderStock();};
+window.setFiltroMovTipo=function(v){fMovTipo=v;renderMovimientos();};
+window.setFiltroMovPintura=function(v){fMovPintura=v;renderMovimientos();};
+
+function renderMovimientos(){
+  const el=document.getElementById('list-movimientos');
+  if(!el) return;
+  document.getElementById('fm-tipo').innerHTML=
+    ['todos','ingreso','salida'].map(t=>`<button class="${fMovTipo===t?'active':''}" onclick="setFiltroMovTipo('${t}')">${t==='todos'?'Todos':t==='ingreso'?'▲ Ingresos':'▼ Salidas'}</button>`).join('');
+  document.getElementById('fm-pintura').innerHTML=
+    `<button class="${fMovPintura==='todos'?'active':''}" onclick="setFiltroMovPintura('todos')">Todas</button>`
+    +_pinturas.map(p=>`<button class="${fMovPintura===p.id?'active':''}" onclick="setFiltroMovPintura('${p.id}')">${p.nombre}</button>`).join('');
+
+  let movs=[..._movimientos].sort((a,b)=>b.creadoEn-a.creadoEn);
+  if(fMovTipo!=='todos') movs=movs.filter(m=>m.tipo===fMovTipo);
+  if(fMovPintura!=='todos') movs=movs.filter(m=>m.pinturaId===fMovPintura);
+
+  el.innerHTML=movs.length?movs.map(m=>{
+    const p=_pinturas.find(x=>x.id===m.pinturaId);
+    return `<div class="movimiento-row">
+      <div class="mov-tipo" style="background:${m.tipo==='ingreso'?'var(--success)':'var(--danger)'}"></div>
+      <div class="mov-info">
+        <div class="mov-titulo">${m.tipo==='ingreso'?'▲ Ingreso':'▼ Salida'} — <strong>${m.kilos} kg</strong> — ${p?p.nombre:'—'}</div>
+        <div class="mov-det">${m.fecha}${m.lote?' | Lote: '+m.lote:''}${m.remito?' | Remito: '+m.remito:''}${m.proveedor?' | '+m.proveedor:''}${m.motivo?' | '+m.motivo:''}${m.notas?' | '+m.notas:''}</div>
+      </div>
+      <span style="font-family:\'Bebas Neue\',sans-serif;font-size:20px;color:${m.tipo==='ingreso'?'var(--success)':'var(--danger)'};">${m.tipo==='ingreso'?'+':'-'}${m.kilos} kg</span>
+    </div>`;
+  }).join(''):'<div class="empty">No hay movimientos registrados</div>';
+}
+
+function renderPinturas(){
+  const el=document.getElementById('list-pinturas');
+  if(!el) return;
+  el.innerHTML=_pinturas.length?_pinturas.map(p=>{
+    const stock=getStock(p.id);
+    return `<div class="movimiento-row">
+      <div class="stock-color" style="background:${p.color||'#888'};width:20px;height:20px;border-radius:50%;border:2px solid var(--border);flex-shrink:0;"></div>
+      <div class="mov-info">
+        <div class="mov-titulo">${p.nombre}</div>
+        <div class="mov-det">${p.marca?'Marca: '+p.marca+' | ':''} ${p.codigo?'Cód: '+p.codigo+' | ':''} Stock: ${stock.toFixed(1)} kg${p.minimo?' | Mín: '+p.minimo+' kg':''}</div>
+      </div>
+      <button class="btn btn-sm btn-danger" onclick="eliminarPintura('${p.id}')">✕</button>
+    </div>`;
+  }).join(''):'<p style="font-size:13px;color:var(--text-muted);padding:8px 0;">No hay pinturas cargadas todavía. Agregá una abajo.</p>';
+}
+
+onSnapshot(collection(db,'stock_pinturas'),snap=>{
+  _pinturas=snap.docs.map(d=>d.data()).sort((a,b)=>a.nombre?.localeCompare(b.nombre));
+  render();
+  document.getElementById('loading').style.display='none';
+});
+onSnapshot(collection(db,'stock_movimientos'),snap=>{
+  _movimientos=snap.docs.map(d=>({fireId:d.id,...d.data()}));
+  render();
+});
+</script>
+</body>
+</html>
