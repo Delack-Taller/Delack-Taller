@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Taller Delack</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0f0f0f;--surface:#1a1a1a;--surface2:#242424;--border:#2e2e2e;--text:#f0f0f0;--text-muted:#666;--accent:#e8c84a;--danger:#e84a4a;--success:#4ae89a;--radius:10px;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;}
+header{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 18px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:100;}
+header h1{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:2px;color:var(--accent);}
+header span{font-size:11px;color:var(--text-muted);margin-left:auto;}
+.container{max-width:960px;margin:0 auto;padding:18px 13px;}
+.horno-tabs{display:flex;gap:4px;margin-bottom:16px;}
+.horno-tab{flex:1;padding:11px;border:2px solid var(--border);border-radius:var(--radius);background:var(--surface);color:var(--text-muted);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;text-align:center;transition:all 0.2s;}
+.horno-tab.active{border-color:var(--accent);color:var(--accent);background:var(--surface2);}
+.tabs{display:flex;gap:3px;background:var(--surface);border-radius:var(--radius);padding:4px;margin-bottom:18px;flex-wrap:wrap;}
+.tab{flex:1;min-width:55px;padding:8px 4px;border:none;border-radius:8px;background:transparent;color:var(--text-muted);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:500;transition:all 0.2s;text-align:center;}
+.tab.active{background:var(--accent);color:#000;}
+.panel{display:none;}.panel.active{display:block;}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:16px;}
+.card h2{font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:1px;margin-bottom:13px;color:var(--accent);}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
+@media(max-width:600px){.form-grid{grid-template-columns:1fr;}}
+.field{display:flex;flex-direction:column;gap:5px;}
+.field.full{grid-column:1/-1;}
+label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.8px;color:var(--text-muted);}
+input,select,textarea{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:8px 10px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;transition:border-color 0.2s;width:100%;}
+input:focus,select:focus{border-color:var(--accent);}
+select option{background:var(--surface2);}
+#f-cliente,#ic-cliente,#ed-cliente,#eg-cliente{font-size:16px;min-height:40px;}
+.color-dot-select{display:flex;gap:8px;align-items:center;}
+.color-preview{width:24px;height:24px;border-radius:50%;border:2px solid var(--border);flex-shrink:0;}
+.btn{padding:9px 16px;border:none;border-radius:8px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;transition:all 0.15s;}
+.btn-primary{background:var(--accent);color:#000;width:100%;margin-top:7px;}
+.btn-primary:hover{filter:brightness(1.1);}
+.btn-sm{padding:5px 9px;font-size:11px;border-radius:6px;}
+.btn-danger{background:var(--danger);color:#fff;}
+.btn-success{background:var(--success);color:#000;}
+.btn-ghost{background:var(--surface2);color:var(--text);border:1px solid var(--border);}
+.filter-bar{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px;}
+.filter-bar button{padding:4px 10px;border-radius:16px;border:1px solid var(--border);background:var(--surface);color:var(--text-muted);cursor:pointer;font-size:11px;font-family:'DM Sans',sans-serif;transition:all 0.15s;}
+.filter-bar button.active{border-color:var(--accent);color:var(--accent);}
+.color-filter{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;}
+.color-chip{display:flex;align-items:center;gap:5px;padding:6px 12px;border-radius:20px;border:1px solid var(--border);background:var(--surface);color:var(--text-muted);cursor:pointer;font-size:12px;font-weight:500;transition:all 0.15s;}
+.color-chip.selected{border-color:var(--accent);color:var(--text);background:var(--surface2);}
+.color-chip .dot{width:10px;height:10px;border-radius:50%;border:1px solid rgba(255,255,255,0.15);flex-shrink:0;}
+.guia-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:10px;overflow:hidden;}
+.guia-header{padding:12px 14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;border-bottom:1px solid var(--border);}
+.guia-num{font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--accent);}
+.guia-meta{font-size:11px;color:var(--text-muted);}
+.guia-body{padding:10px 14px;}
+.pieza-row{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;background:var(--surface2);margin-bottom:6px;flex-wrap:wrap;}
+.pieza-info{flex:1;min-width:120px;}
+.pieza-nombre{font-size:13px;font-weight:600;}
+.pieza-det{font-size:11px;color:var(--text-muted);margin-top:2px;}
+.pieza-acciones{display:flex;gap:4px;flex-wrap:wrap;align-items:center;}
+.estado-badge{padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600;text-transform:uppercase;white-space:nowrap;}
+.estado-recibido{background:#2a2a3a;color:#8888dd;}
+.estado-en-proceso{background:#2a2010;color:#e8a84a;}
+.estado-pintado{background:#102a1a;color:var(--success);}
+.estado-entregado{background:#1a1a1a;color:var(--text-muted);}
+.barra-bg{height:5px;background:var(--border);border-radius:3px;margin-top:4px;}
+.barra{height:5px;background:var(--success);border-radius:3px;}
+.summary-chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
+.schip{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:8px 12px;text-align:center;min-width:70px;}
+.schip .n{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--accent);line-height:1;}
+.schip .l{font-size:10px;color:var(--text-muted);text-transform:uppercase;}
+.color-list{display:flex;flex-direction:column;gap:6px;}
+.color-item{display:flex;align-items:center;gap:10px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:8px 12px;}
+.color-swatch{width:20px;height:20px;border-radius:50%;border:1px solid rgba(255,255,255,0.15);flex-shrink:0;}
+.section-title{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.8px;color:var(--text-muted);margin-bottom:7px;}
+.empty{text-align:center;padding:32px 18px;color:var(--text-muted);font-size:13px;}
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:200;align-items:flex-start;justify-content:center;padding:16px;overflow-y:auto;}
+.modal.open{display:flex;}
+.modal-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;width:100%;max-width:540px;margin:auto;}
+.modal-box h2{font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--accent);margin-bottom:14px;}
+#foto-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.95);z-index:300;align-items:center;justify-content:center;}
+#foto-modal.open{display:flex;}
+#foto-modal img{max-width:92vw;max-height:88vh;border-radius:8px;}
+.pieza-temp-row{display:flex;align-items:center;gap:7px;background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:8px 10px;margin-bottom:6px;flex-wrap:wrap;}
+#loading{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:999;flex-direction:column;gap:10px;}
+.spinner{width:34px;height:34px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 0.8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.horno-manual-btns{display:flex;gap:6px;margin-top:6px;}
+.horno-manual-btns button{flex:1;padding:7px;border-radius:7px;border:1px solid var(--border);background:var(--surface2);color:var(--text-muted);cursor:pointer;font-size:11px;font-weight:600;font-family:'DM Sans',sans-serif;transition:all 0.15s;}
+.horno-manual-btns button.sel-estanco{border-color:#e84a4a;color:#e84a4a;background:#1a0a0a;}
+.horno-manual-btns button.sel-continuo{border-color:var(--accent);color:var(--accent);background:#1a1a0a;}
+</style>
+</head>
+<body>
+<div id="loading"><div class="spinner"></div><span style="color:var(--text-muted);font-size:12px;">Conectando...</span></div>
+<header><h1>🔧 Taller Delack</h1><span id="fecha-hoy"></span></header>
+<div class="container">
+  <div class="horno-tabs">
+    <button class="horno-tab active" id="btn-estanco" onclick="setHorno('estanco')">🔥 Horno Estanco</button>
+    <button class="horno-tab" id="btn-continuo" onclick="setHorno('continuo')">⚙️ Horno Continuo</button>
+  </div>
+  <div class="tabs">
+    <button class="tab active" onclick="showTab('pendientes')">Pendientes</button>
+    <button class="tab" onclick="showTab('pintados')">🎨 Pintados</button>
+    <button class="tab" onclick="showTab('entregados')">📤 Entregados</button>
+    <button class="tab" onclick="showTab('nuevo')">+ Nueva entrada</button>
+    <button class="tab" onclick="showTab('guias')">Guías</button>
+    <button class="tab" onclick="showTab('colores')">Colores</button>
+    <button class="tab" onclick="showTab('clientes')">Clientes</button>
+  </div>
+
+  <div class="panel active" id="tab-pendientes">
+    <div class="card">
+      <p class="section-title">Filtrar por horno</p><div class="filter-bar" id="fp-horno"></div>
+      <p class="section-title">Filtrar por cliente</p><div class="filter-bar" id="fp-cliente"></div>
+      <p class="section-title">Filtrar por color</p><div class="color-filter" id="fp-color"></div>
+    </div>
+    <div class="summary-chips" id="fp-summary"></div>
+    <div id="list-pendientes"></div>
+  </div>
+
+  <div class="panel" id="tab-pintados">
+    <div class="card">
+      <p class="section-title">Filtrar por horno</p><div class="filter-bar" id="fpi-horno"></div>
+      <p class="section-title">Filtrar por cliente</p><div class="filter-bar" id="fpi-cliente"></div>
+      <p class="section-title">Filtrar por color</p><div class="color-filter" id="fpi-color"></div>
+    </div>
+    <div id="list-pintados"></div>
+  </div>
+
+  <div class="panel" id="tab-entregados">
+    <div class="card">
+      <p class="section-title">Filtrar por horno</p><div class="filter-bar" id="fen-horno"></div>
+      <p class="section-title">Filtrar por cliente</p><div class="filter-bar" id="fen-cliente"></div>
+      <p class="section-title">Filtrar por color</p><div class="color-filter" id="fen-color"></div>
+    </div>
+    <div id="list-entregados"></div>
+  </div>
+
+  <div class="panel" id="tab-nuevo">
+    <div class="card">
+      <h2 id="nuevo-titulo">Nueva entrada de material</h2>
+      <div class="form-grid" style="margin-bottom:12px;">
+        <div class="field"><label>Fecha recepción</label><input type="date" id="f-fecha"></div>
+        <div class="field"><label>Cliente</label><select id="f-cliente"><option value="">— Seleccioná —</option></select></div>
+        <div class="field"><label>Nº Guía (opcional)</label><input type="text" id="f-guia" placeholder="Se asigna automático si dejás vacío"></div>
+        <div class="field"><label>Observaciones generales</label><input type="text" id="f-notas" placeholder="Opcional"></div>
+      </div>
+      <div class="card" style="background:var(--surface2);margin-bottom:12px;">
+        <p class="section-title">Agregar piezas</p>
+        <div class="form-grid">
+          <div class="field"><label>Material / Pieza</label><input type="text" id="f-material" placeholder="Ej: ISOfix, rejas..."></div>
+          <div class="field"><label>Cantidad</label><input type="number" id="f-cantidad" placeholder="Ej: 112"></div>
+          <div class="field"><label>Color</label>
+            <div class="color-dot-select">
+              <div class="color-preview" id="color-preview-dot"></div>
+              <select id="f-color" onchange="updateColorPreview()"></select>
+            </div>
+          </div>
+          <div class="field"><label>Ancho (mm)</label><input type="number" id="f-ancho" placeholder="Ej: 450" oninput="detectarHorno()"></div>
+          <div class="field"><label>Largo (mm)</label><input type="number" id="f-largo" placeholder="Ej: 1500" oninput="detectarHorno()"></div>
+          <div class="field"><label>Alto (mm)</label><input type="number" id="f-alto" placeholder="Ej: 600" oninput="detectarHorno()"></div>
+          <div class="field"><label>Diámetro (mm)</label><input type="number" id="f-diametro" placeholder="Para piezas redondas"></div>
+          <div class="field">
+            <label>Horno detectado</label>
+            <div id="horno-sugerido" style="padding:8px 10px;border-radius:8px;background:var(--surface);border:1px solid var(--border);font-size:12px;color:var(--text-muted);">Ingresá las medidas</div>
+            <div class="horno-manual-btns">
+              <button id="mb-estanco" onclick="setHornoManual('estanco')">🔥 Estanco</button>
+              <button id="mb-continuo" onclick="setHornoManual('continuo')">⚙️ Continuo</button>
+              <button id="mb-auto" onclick="setHornoManual('auto')" style="border-color:var(--accent);color:var(--accent);">✦ Auto</button>
+            </div>
+          </div>
+          <div class="field full"><label>Foto (opcional)</label><input type="file" id="f-foto" accept="image/*" style="padding:6px;"></div>
+        </div>
+        <button class="btn btn-ghost" style="width:100%;margin-top:8px;" onclick="agregarPieza()">+ Agregar pieza a la lista</button>
+      </div>
+      <div id="piezas-lista" style="margin-bottom:10px;"></div>
+      <button class="btn btn-primary" onclick="guardarEntrada()">Guardar entrada completa</button>
+      <div id="form-msg" style="display:none;margin-top:9px;font-size:12px;color:var(--success);"></div>
+    </div>
+  </div>
+
+  <div class="panel" id="tab-guias">
+    <div class="card">
+      <h2>Guías de entrada</h2>
+      <div class="filter-bar" id="fg-cliente"></div>
+    </div>
+    <div id="list-guias"></div>
+  </div>
+
+  <div class="panel" id="tab-colores">
+    <div class="card">
+      <h2>Colores</h2>
+      <div class="color-list" id="color-list"></div>
+      <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;">
+        <input type="color" id="nc-hex" value="#ff6600" style="width:42px;height:36px;padding:2px;border-radius:8px;">
+        <input type="text" id="nc-nombre" placeholder="Nombre del color" style="flex:1;">
+        <button class="btn btn-primary" style="width:auto;margin-top:0;" onclick="agregarColor()">Agregar</button>
+      </div>
+      <div id="color-msg" style="display:none;margin-top:9px;font-size:12px;"></div>
+    </div>
+  </div>
+
+  <div class="panel" id="tab-clientes">
+    <div class="card">
+      <h2>Clientes</h2>
+      <div class="color-list" id="cliente-list"></div>
+      <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;">
+        <input type="text" id="nc-cliente" placeholder="Nombre del cliente" style="flex:1;">
+        <button class="btn btn-primary" style="width:auto;margin-top:0;" onclick="agregarCliente()">Agregar</button>
+      </div>
+      <div id="cliente-msg" style="display:none;margin-top:9px;font-size:12px;"></div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL DETALLE GUÍA -->
+<div class="modal" id="modal-detalle-guia">
+  <div class="modal-box" style="max-width:600px;">
+    <h2 id="det-guia-titulo">Detalle</h2>
+    <div id="det-guia-contenido" style="max-height:70vh;overflow-y:auto;"></div>
+    <button class="btn btn-ghost" style="width:100%;margin-top:12px;" onclick="cerrarModal('modal-detalle-guia')">Cerrar</button>
+  </div>
+</div>
+
+<!-- MODAL CAMBIAR ESTADO -->
+<div class="modal" id="modal-estado">
+  <div class="modal-box">
+    <h2>Cambiar estado</h2>
+    <p id="estado-info" style="font-size:12px;color:var(--text-muted);margin-bottom:12px;"></p>
+    <div class="field" style="margin-bottom:12px;">
+      <label>Nuevo estado</label>
+      <select id="est-nuevo">
+        <option value="recibido">Recibido</option>
+        <option value="en-proceso">En proceso</option>
+        <option value="pintado">Pintado</option>
+      </select>
+    </div>
+    <div class="field" style="margin-bottom:12px;">
+      <label>Cantidad (opcional — si es parcial)</label>
+      <input type="number" id="est-cantidad" placeholder="Dejá vacío para aplicar a todo">
+    </div>
+    <div style="display:flex;gap:8px;margin-top:11px;">
+      <button class="btn btn-primary" style="flex:1;" onclick="confirmarEstado()">Confirmar</button>
+      <button class="btn btn-ghost btn-sm" onclick="cerrarModal('modal-estado')">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL SALIDA -->
+<div class="modal" id="modal-salida">
+  <div class="modal-box">
+    <h2>Registrar salida</h2>
+    <p id="salida-info" style="font-size:12px;color:var(--text-muted);margin-bottom:12px;"></p>
+    <div class="form-grid">
+      <div class="field"><label>Fecha</label><input type="date" id="sal-fecha"></div>
+      <div class="field"><label>Nº Remito</label><input type="text" id="sal-remito" placeholder="Ej: R-001"></div>
+      <div class="field"><label>Cantidad</label><input type="number" id="sal-cantidad" placeholder="Ej: 56" oninput="actualizarSaldoSalida()"></div>
+      <div class="field">
+        <label>Saldo restante</label>
+        <div id="sal-saldo" style="padding:8px 10px;border-radius:8px;background:var(--surface2);border:1px solid var(--border);font-size:13px;color:var(--text-muted);">—</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:11px;">
+      <button class="btn btn-primary" style="flex:1;" onclick="confirmarSalida()">Confirmar salida</button>
+      <button class="btn btn-ghost btn-sm" onclick="cerrarModal('modal-salida')">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL EDITAR PIEZA -->
+<div class="modal" id="modal-editar-pieza">
+  <div class="modal-box" style="max-width:560px;">
+    <h2>Editar pieza</h2>
+    <div class="form-grid">
+      <div class="field"><label>Material / Pieza</label><input type="text" id="ep-material"></div>
+      <div class="field"><label>Cantidad total</label><input type="number" id="ep-cantidad"></div>
+      <div class="field"><label>Color</label><select id="ep-color"></select></div>
+      <div class="field"><label>Horno</label>
+        <select id="ep-horno">
+          <option value="estanco">🔥 Horno Estanco</option>
+          <option value="continuo">⚙️ Horno Continuo</option>
+        </select>
+      </div>
+      <div class="field"><label>Ancho (mm)</label><input type="number" id="ep-ancho"></div>
+      <div class="field"><label>Largo (mm)</label><input type="number" id="ep-largo"></div>
+      <div class="field"><label>Alto (mm)</label><input type="number" id="ep-alto"></div>
+      <div class="field"><label>Diámetro (mm)</label><input type="number" id="ep-diametro"></div>
+      <div class="field full">
+        <label>Foto (reemplazar o agregar)</label>
+        <input type="file" id="ep-foto" accept="image/*" style="padding:6px;">
+        <div id="ep-foto-preview" style="margin-top:6px;"></div>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:11px;">
+      <button class="btn btn-primary" style="flex:1;" onclick="guardarEdicionPieza()">Guardar cambios</button>
+      <button class="btn btn-ghost btn-sm" onclick="cerrarModal('modal-editar-pieza')">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL EDITAR GUÍA -->
+<div class="modal" id="modal-editar-guia">
+  <div class="modal-box">
+    <h2>Editar entrada</h2>
+    <div class="form-grid">
+      <div class="field"><label>Nº Guía</label><input type="text" id="eg-numero"></div>
+      <div class="field"><label>Cliente</label><select id="eg-cliente"></select></div>
+      <div class="field full"><label>Fecha</label><input type="date" id="eg-fecha"></div>
+      <div class="field full"><label>Observaciones</label><input type="text" id="eg-notas"></div>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:11px;">
+      <button class="btn btn-primary" style="flex:1;" onclick="guardarEdicionGuia()">Guardar</button>
+      <button class="btn btn-ghost btn-sm" onclick="cerrarModal('modal-editar-guia')">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- FOTO AMPLIADA -->
+<div id="foto-modal" onclick="this.classList.remove('open')"><img id="foto-modal-img" src=""></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, doc, onSnapshot, addDoc, updateDoc, deleteDoc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDDTrSQcnN4nSHDwXJpDJq3RK1jrZURr-k",
+  authDomain: "delack-de352.firebaseapp.com",
+  projectId: "delack-de352",
+  storageBucket: "delack-de352.firebasestorage.app",
+  messagingSenderId: "807394903456",
+  appId: "1:807394903456:web:c04da294965f586f70d0c5"
+};
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// ─── ESTADO ────────────────────────────────────────────
+let _guias=[], _colors=[], _clientes=[], _horno='estanco', _hornoManual='auto', _piezasTemp=[];
+let _salidaGuiaId=null, _salidaPiezaIdx=null, _estadoGuiaId=null, _estadoPiezaIdx=null, _editandoGuiaId=null;
+let fPendHorno='todos', fPendCliente='todos', fPendColor='todos';
+let fPintHorno='todos', fPintCliente='todos', fPintColor='todos';
+let fEntHorno='todos',  fEntCliente='todos',  fEntColor='todos';
+let fGuiaCliente='todos';
+
+const COLORES_DEFAULT=[
+  {id:'negro',nombre:'Negro',hex:'#1a1a1a'},{id:'blanco',nombre:'Blanco',hex:'#f5f5f5'},
+  {id:'rojo',nombre:'Rojo',hex:'#e63030'},{id:'azul',nombre:'Azul',hex:'#2a6dd9'},
+  {id:'verde',nombre:'Verde',hex:'#2db055'},{id:'amarillo',nombre:'Amarillo',hex:'#e8c84a'},
+  {id:'gris',nombre:'Gris',hex:'#7a7a7a'},{id:'marron',nombre:'Marrón',hex:'#7a4a20'},
+];
+
+function colorInfo(id){ return _colors.find(c=>c.id===id)||{nombre:id||'—',hex:'#888'}; }
+function statusLabel(s){ return {recibido:'Recibido','en-proceso':'En proceso',pintado:'Pintado',entregado:'Entregado'}[s]||s; }
+
+document.getElementById('fecha-hoy').textContent=new Date().toLocaleDateString('es-AR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+document.getElementById('f-fecha').value=new Date().toISOString().split('T')[0];
+
+// ─── HORNO ─────────────────────────────────────────────
+window.setHorno=function(h){
+  _horno=h;
+  document.getElementById('btn-estanco').classList.toggle('active',h==='estanco');
+  document.getElementById('btn-continuo').classList.toggle('active',h==='continuo');
+  document.getElementById('nuevo-titulo').textContent='Nueva entrada — '+(h==='estanco'?'Horno Estanco':'Horno Continuo');
+  render();
+};
+window.detectarHorno=function(){
+  const a=parseFloat(document.getElementById('f-ancho').value)||0;
+  const l=parseFloat(document.getElementById('f-largo').value)||0;
+  const h=parseFloat(document.getElementById('f-alto').value)||0;
+  const el=document.getElementById('horno-sugerido');
+  if(!a&&!l&&!h){el.textContent='Ingresá las medidas';el.style.color='var(--text-muted)';return;}
+  if(a<=600&&l<=2000&&h<=800){el.innerHTML='⚙️ <strong>Horno Continuo</strong>';el.style.color='var(--accent)';}
+  else{el.innerHTML='🔥 <strong>Horno Estanco</strong>';el.style.color='#e84a4a';}
+};
+function calcHorno(ancho,largo,alto){
+  if(_hornoManual!=='auto') return _hornoManual;
+  if(ancho&&largo&&alto) return (parseFloat(ancho)<=600&&parseFloat(largo)<=2000&&parseFloat(alto)<=800)?'continuo':'estanco';
+  return _horno;
+}
+window.setHornoManual=function(v){
+  _hornoManual=v;
+  document.getElementById('mb-estanco').className=v==='estanco'?'sel-estanco':'';
+  document.getElementById('mb-continuo').className=v==='continuo'?'sel-continuo':'';
+  document.getElementById('mb-auto').style.borderColor=v==='auto'?'var(--accent)':'var(--border)';
+  document.getElementById('mb-auto').style.color=v==='auto'?'var(--accent)':'var(--text-muted)';
+};
+
+// ─── TABS ──────────────────────────────────────────────
+window.showTab=function(tab){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('tab-'+tab).classList.add('active');
+  event.target.classList.add('active');
+  render();
+};
+
+// ─── SELECTS ───────────────────────────────────────────
+window.updateColorPreview=function(){
+  const sel=document.getElementById('f-color');
+  const c=_colors.find(x=>x.id===sel.value);
+  document.getElementById('color-preview-dot').style.background=c?c.hex:'#888';
+};
+function populateSelects(){
+  const sel=document.getElementById('f-color');
+  const prev=sel.value;
+  sel.innerHTML=_colors.map(c=>'<option value="'+c.id+'">'+c.nombre+'</option>').join('');
+  if(prev&&_colors.find(x=>x.id===prev)) sel.value=prev;
+  updateColorPreview();
+  const optsC='<option value="">— Seleccioná —</option>'+_clientes.map(c=>'<option value="'+c.nombre+'">'+c.nombre+'</option>').join('');
+  ['f-cliente','eg-cliente'].forEach(function(id){
+    const el=document.getElementById(id);
+    if(el){const p=el.value;el.innerHTML=optsC;if(p)el.value=p;}
+  });
+}
+
+// ─── FOTO ──────────────────────────────────────────────
+function leerFoto(file){
+  return new Promise(function(res){const r=new FileReader();r.onload=function(e){res(e.target.result);};r.readAsDataURL(file);});
+}
+
+// ─── PIEZAS TEMP ───────────────────────────────────────
+window.agregarPieza=async function(){
+  const material=document.getElementById('f-material').value.trim();
+  const cantidad=parseInt(document.getElementById('f-cantidad').value)||0;
+  const colorId=document.getElementById('f-color').value;
+  const ancho=document.getElementById('f-ancho').value;
+  const largo=document.getElementById('f-largo').value;
+  const alto=document.getElementById('f-alto').value;
+  const diametro=document.getElementById('f-diametro').value;
+  if(!material){alert('Ingresá el nombre de la pieza.');return;}
+  if(!cantidad){alert('Ingresá la cantidad.');return;}
+  const fotoFile=document.getElementById('f-foto').files[0];
+  let foto=null;
+  if(fotoFile) foto=await leerFoto(fotoFile);
+  const horno=calcHorno(ancho,largo,alto);
+  _piezasTemp.push({material,cantidad,colorId,ancho,largo,alto,diametro,foto,horno});
+  ['f-material','f-cantidad','f-ancho','f-largo','f-alto','f-diametro'].forEach(function(id){document.getElementById(id).value='';});
+  document.getElementById('f-foto').value='';
+  document.getElementById('horno-sugerido').textContent='Ingresá las medidas';
+  document.getElementById('horno-sugerido').style.color='var(--text-muted)';
+  _hornoManual='auto'; setHornoManual('auto');
+  renderPiezasTemp();
+};
+window.quitarPieza=function(i){_piezasTemp.splice(i,1);renderPiezasTemp();};
+function renderPiezasTemp(){
+  const el=document.getElementById('piezas-lista');
+  if(!_piezasTemp.length){el.innerHTML='';return;}
+  el.innerHTML=_piezasTemp.map(function(p,i){
+    const c=colorInfo(p.colorId);
+    let txt='<div class="pieza-temp-row">';
+    if(p.foto) txt+='<img src="'+p.foto+'" style="width:34px;height:34px;object-fit:cover;border-radius:5px;">';
+    txt+='<span style="flex:1;font-size:12px;"><strong>'+p.material+'</strong> × '+p.cantidad+' | <span style="color:'+c.hex+'">'+c.nombre+'</span> | '+(p.horno==='continuo'?'⚙️ Continuo':'🔥 Estanco');
+    if(p.ancho) txt+=' | '+p.ancho+'×'+p.largo+'×'+p.alto+'mm';
+    if(p.diametro) txt+=' | ⌀'+p.diametro+'mm';
+    txt+='</span><button class="btn btn-sm btn-danger" onclick="quitarPieza('+i+')">✕</button></div>';
+    return txt;
+  }).join('');
+}
+
+// ─── GUARDAR ENTRADA ───────────────────────────────────
+async function siguienteNumeroGuia(){
+  const snap=await getDoc(doc(db,'config','guia_counter'));
+  const n=snap.exists()?(snap.data().ultimo||1)+1:2;
+  await setDoc(doc(db,'config','guia_counter'),{ultimo:n});
+  return 'D-'+String(n).padStart(3,'0');
+}
+window.guardarEntrada=async function(){
+  const fecha=document.getElementById('f-fecha').value;
+  const cliente=document.getElementById('f-cliente').value;
+  const notas=document.getElementById('f-notas').value.trim();
+  if(!fecha||!cliente){alert('Completá fecha y cliente.');return;}
+  if(!_piezasTemp.length){alert('Agregá al menos una pieza.');return;}
+  let guia=document.getElementById('f-guia').value.trim();
+  if(!guia) guia=await siguienteNumeroGuia();
+  const piezas=_piezasTemp.map(function(p){
+    return {material:p.material,cantidadTotal:p.cantidad,cantidadPendiente:p.cantidad,cantidadPintada:0,cantidadEntregada:0,colorId:p.colorId,horno:p.horno,ancho:p.ancho||'',largo:p.largo||'',alto:p.alto||'',diametro:p.diametro||'',fotoUrl:p.foto||null,estado:'recibido',salidas:[]};
+  });
+  const guiaId=(cliente+'_'+guia).replace(/[\s\/\\]/g,'_');
+  await setDoc(doc(db,'guias',guiaId),{numero:guia,cliente,fecha,notas,horno:_horno,piezas,creadoEn:Date.now()});
+  _piezasTemp=[];
+  renderPiezasTemp();
+  document.getElementById('f-cliente').value='';
+  document.getElementById('f-guia').value='';
+  document.getElementById('f-notas').value='';
+  document.getElementById('f-fecha').value=new Date().toISOString().split('T')[0];
+  const msg=document.getElementById('form-msg');
+  msg.textContent='✔ Entrada guardada. Guía: '+guia;
+  msg.style.display='block';
+  setTimeout(function(){msg.style.display='none';},3000);
+};
+
+// ─── ESTADO ────────────────────────────────────────────
+window.abrirCambioEstado=function(guiaId,pi){
+  _estadoGuiaId=guiaId; _estadoPiezaIdx=pi;
+  const g=_guias.find(function(x){return x.fireId===guiaId;});
+  const p=(g.piezas||[])[pi];
+  document.getElementById('estado-info').textContent=p.material+' | Pendiente: '+p.cantidadPendiente+' | Pintado: '+p.cantidadPintada;
+  document.getElementById('est-nuevo').value=p.estado||'recibido';
+  document.getElementById('est-cantidad').value='';
+  document.getElementById('modal-estado').classList.add('open');
+};
+window.confirmarEstado=async function(){
+  if(_estadoGuiaId===null) return;
+  const g=_guias.find(function(x){return x.fireId===_estadoGuiaId;});
+  const piezas=JSON.parse(JSON.stringify(g.piezas||[]));
+  const p=piezas[_estadoPiezaIdx];
+  const nuevoEstado=document.getElementById('est-nuevo').value;
+  const cant=parseInt(document.getElementById('est-cantidad').value)||0;
+  if(nuevoEstado==='pintado'){
+    const aPintar=cant||p.cantidadPendiente;
+    p.cantidadPintada=(p.cantidadPintada||0)+aPintar;
+    p.cantidadPendiente=Math.max(0,(p.cantidadPendiente||0)-aPintar);
+  }
+  p.estado=nuevoEstado;
+  await updateDoc(doc(db,'guias',_estadoGuiaId),{piezas});
+  cerrarModal('modal-estado');
+};
+
+// ─── SALIDA ────────────────────────────────────────────
+window.abrirSalida=function(guiaId,pi){
+  _salidaGuiaId=guiaId; _salidaPiezaIdx=pi;
+  const g=_guias.find(function(x){return x.fireId===guiaId;});
+  const p=(g.piezas||[])[pi];
+  const disponible=(p.cantidadPintada||0)-(p.cantidadEntregada||0);
+  document.getElementById('salida-info').textContent=p.material+' | '+g.cliente+' | Guía: '+g.numero+' | Disponible: '+disponible;
+  document.getElementById('sal-fecha').value=new Date().toISOString().split('T')[0];
+  document.getElementById('sal-remito').value='';
+  document.getElementById('sal-cantidad').value='';
+  document.getElementById('sal-saldo').textContent='—';
+  document.getElementById('modal-salida').classList.add('open');
+};
+window.actualizarSaldoSalida=function(){
+  if(_salidaGuiaId===null) return;
+  const g=_guias.find(function(x){return x.fireId===_salidaGuiaId;});
+  const p=(g.piezas||[])[_salidaPiezaIdx];
+  const disponible=(p.cantidadPintada||0)-(p.cantidadEntregada||0);
+  const cant=parseInt(document.getElementById('sal-cantidad').value)||0;
+  const saldo=disponible-cant;
+  const el=document.getElementById('sal-saldo');
+  el.textContent=saldo>=0?saldo+' quedan':'⚠ Supera lo disponible';
+  el.style.color=saldo<0?'var(--danger)':saldo===0?'var(--success)':'var(--text)';
+};
+window.confirmarSalida=async function(){
+  if(_salidaGuiaId===null) return;
+  const fecha=document.getElementById('sal-fecha').value;
+  const remito=document.getElementById('sal-remito').value.trim();
+  const cant=parseInt(document.getElementById('sal-cantidad').value)||0;
+  if(!remito){alert('Ingresá el número de remito.');return;}
+  if(!cant){alert('Ingresá la cantidad.');return;}
+  const g=_guias.find(function(x){return x.fireId===_salidaGuiaId;});
+  const piezas=JSON.parse(JSON.stringify(g.piezas||[]));
+  const p=piezas[_salidaPiezaIdx];
+  const disponible=(p.cantidadPintada||0)-(p.cantidadEntregada||0);
+  if(cant>disponible){alert('La cantidad supera lo disponible.');return;}
+  p.cantidadEntregada=(p.cantidadEntregada||0)+cant;
+  if(!p.salidas) p.salidas=[];
+  p.salidas.push({fecha,remito,cantidad:cant});
+  if(p.cantidadEntregada>=(p.cantidadPintada||0)&&(p.cantidadPendiente||0)<=0) p.estado='entregado';
+  await updateDoc(doc(db,'guias',_salidaGuiaId),{piezas});
+  cerrarModal('modal-salida');
+};
+
+// ─── DETALLE GUÍA ──────────────────────────────────────
+window.verDetalleGuia=function(guiaId){
+  const g=_guias.find(function(x){return x.fireId===guiaId;});
+  if(!g) return;
+  document.getElementById('det-guia-titulo').textContent='Guía '+g.numero+' — '+g.cliente;
+  const piezas=g.piezas||[];
+  let html='<div style="font-size:12px;color:var(--text-muted);margin-bottom:14px;line-height:1.8;">';
+  html+='📅 '+g.fecha+'&nbsp;&nbsp;|&nbsp;&nbsp;👤 '+g.cliente+'&nbsp;&nbsp;|&nbsp;&nbsp;'+(g.horno==='continuo'?'⚙️ Horno Continuo':'🔥 Horno Estanco');
+  if(g.notas) html+='<br>📝 '+g.notas;
+  html+='</div>';
+  piezas.forEach(function(p){
+    const c=colorInfo(p.colorId);
+    html+='<div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:8px;">';
+    if(p.fotoUrl) html+='<img src="'+p.fotoUrl+'" style="width:100%;max-height:200px;object-fit:cover;border-radius:6px;margin-bottom:8px;cursor:pointer;" onclick="verFoto(\''+p.fotoUrl+'\')">';
+    html+='<div style="font-size:15px;font-weight:600;margin-bottom:6px;">'+p.material+'</div>';
+    html+='<div style="font-size:12px;color:var(--text-muted);display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px;">';
+    html+='<span>● <span style="color:'+c.hex+'">'+c.nombre+'</span></span>';
+    html+='<span>Total: '+p.cantidadTotal+'</span>';
+    html+='<span>Pendiente: '+(p.cantidadPendiente||0)+'</span>';
+    html+='<span>Pintado: '+(p.cantidadPintada||0)+'</span>';
+    html+='<span>Entregado: '+(p.cantidadEntregada||0)+'</span>';
+    if(p.ancho) html+='<span>📐 '+p.ancho+'×'+p.largo+'×'+p.alto+'mm</span>';
+    if(p.diametro) html+='<span>⌀ '+p.diametro+'mm</span>';
+    if(p.horno) html+='<span>'+(p.horno==='continuo'?'⚙️ Continuo':'🔥 Estanco')+'</span>';
+    html+='</div>';
+    if(p.salidas&&p.salidas.length){
+      html+='<div style="border-top:1px solid var(--border);padding-top:6px;margin-top:4px;">';
+      html+='<div style="font-size:10px;font-weight:600;color:var(--text-muted);text-transform:uppercase;margin-bottom:4px;">Salidas</div>';
+      p.salidas.forEach(function(s){
+        html+='<div style="font-size:11px;color:var(--text-muted);">📤 '+s.fecha+' — '+s.cantidad+' uds — Remito: '+s.remito+'</div>';
+      });
+      html+='</div>';
+    }
+    html+='</div>';
+  });
+  document.getElementById('det-guia-contenido').innerHTML=html;
+  document.getElementById('modal-detalle-guia').classList.add('open');
+};
+
+// ─── EDITAR GUÍA ───────────────────────────────────────
+window.abrirEditarGuia=function(guiaId){
+  _editandoGuiaId=guiaId;
+  const g=_guias.find(function(x){return x.fireId===guiaId;});
+  document.getElementById('eg-numero').value=g.numero||'';
+  document.getElementById('eg-fecha').value=g.fecha||'';
+  document.getElementById('eg-notas').value=g.notas||'';
+  const sel=document.getElementById('eg-cliente');
+  sel.innerHTML='<option value="">— Seleccioná —</option>'+_clientes.map(function(c){return '<option value="'+c.nombre+'" '+(g.cliente===c.nombre?'selected':'')+'>'+c.nombre+'</option>';}).join('');
+  document.getElementById('modal-editar-guia').classList.add('open');
+};
+window.guardarEdicionGuia=async function(){
+  if(!_editandoGuiaId) return;
+  await updateDoc(doc(db,'guias',_editandoGuiaId),{
+    numero:document.getElementById('eg-numero').value.trim(),
+    cliente:document.getElementById('eg-cliente').value,
+    fecha:document.getElementById('eg-fecha').value,
+    notas:document.getElementById('eg-notas').value.trim(),
+  });
+  cerrarModal('modal-editar-guia');
+};
+window.eliminarGuia=async function(guiaId){
+  const g=_guias.find(function(x){return x.fireId===guiaId;});
+  if(!confirm('¿Eliminar la guía '+g.numero+'? Esta acción no se puede deshacer.')) return;
+  await deleteDoc(doc(db,'guias',guiaId));
+};
+
+// ─── COLORES ───────────────────────────────────────────
+window.agregarColor=async function(){
+  const hex=document.getElementById('nc-hex').value;
+  const nombre=document.getElementById('nc-nombre').value.trim();
+  const msgEl=document.getElementById('color-msg');
+  if(!nombre){msgEl.style.color='var(--danger)';msgEl.textContent='⚠ Escribí el nombre.';msgEl.style.display='block';return;}
+  const n=function(s){return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim();};
+  const ya=_colors.find(function(c){return n(c.nombre)===n(nombre);});
+  if(ya){msgEl.style.color='var(--danger)';msgEl.textContent='⚠ Ya existe "'+ya.nombre+'".';msgEl.style.display='block';return;}
+  const id='color_'+Date.now();
+  await setDoc(doc(db,'colores',id),{id,nombre,hex,orden:_colors.length});
+  document.getElementById('nc-nombre').value='';
+  msgEl.style.color='var(--success)';msgEl.textContent='✔ "'+nombre+'" agregado.';msgEl.style.display='block';
+  setTimeout(function(){msgEl.style.display='none';},2500);
+};
+window.eliminarColor=async function(id){
+  if(!confirm('¿Eliminar este color?')) return;
+  await deleteDoc(doc(db,'colores',id));
+};
+window.toggleMuestra=async function(id,tieneMuestra){
+  await updateDoc(doc(db,'colores',id),{tieneMuestra});
+};
+
+// ─── CLIENTES ──────────────────────────────────────────
+window.agregarCliente=async function(){
+  const nombre=document.getElementById('nc-cliente').value.trim();
+  const msgEl=document.getElementById('cliente-msg');
+  if(!nombre){msgEl.style.color='var(--danger)';msgEl.textContent='⚠ Escribí el nombre.';msgEl.style.display='block';return;}
+  const n=function(s){return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim();};
+  const ya=_clientes.find(function(c){return n(c.nombre)===n(nombre);});
+  if(ya){msgEl.style.color='var(--danger)';msgEl.textContent='⚠ Ya existe "'+ya.nombre+'".';msgEl.style.display='block';return;}
+  const id='cli_'+Date.now();
+  await setDoc(doc(db,'clientes',id),{id,nombre,orden:_clientes.length});
+  document.getElementById('nc-cliente').value='';
+  msgEl.style.color='var(--success)';msgEl.textContent='✔ "'+nombre+'" agregado.';msgEl.style.display='block';
+  setTimeout(function(){msgEl.style.display='none';},2500);
+};
+window.eliminarCliente=async function(id){
+  if(!confirm('¿Eliminar este cliente?')) return;
+  await deleteDoc(doc(db,'clientes',id));
+};
+
+// ─── MODALES ───────────────────────────────────────────
+let _editPiezaGuiaId=null, _editPiezaIdx=null;
+
+window.abrirEdicionPieza=async function(guiaId,pi){
+  _editPiezaGuiaId=guiaId;
+  _editPiezaIdx=pi;
+  const g=_guias.find(function(x){return x.fireId===guiaId;});
+  const p=(g.piezas||[])[pi];
+  document.getElementById('ep-material').value=p.material||'';
+  document.getElementById('ep-cantidad').value=p.cantidadTotal||'';
+  document.getElementById('ep-ancho').value=p.ancho||'';
+  document.getElementById('ep-largo').value=p.largo||'';
+  document.getElementById('ep-alto').value=p.alto||'';
+  document.getElementById('ep-diametro').value=p.diametro||'';
+  document.getElementById('ep-horno').value=p.horno||'estanco';
+  document.getElementById('ep-foto').value='';
+  const prev=document.getElementById('ep-foto-preview');
+  var fotoHtml=p.fotoUrl?('<img src="'+p.fotoUrl+'" style="width:80px;height:80px;object-fit:cover;border-radius:6px;border:1px solid var(--border);cursor:pointer;" onclick="verFoto(this.src)">'):'';
+  prev.innerHTML=fotoHtml;
+  const sel=document.getElementById('ep-color');
+  sel.innerHTML=_colors.map(function(c){return '<option value="'+c.id+'" '+(p.colorId===c.id?'selected':'')+'>'+c.nombre+'</option>';}).join('');
+  document.getElementById('modal-editar-pieza').classList.add('open');
+};
+
+window.guardarEdicionPieza=async function(){
+  if(_editPiezaGuiaId===null) return;
+  const g=_guias.find(function(x){return x.fireId===_editPiezaGuiaId;});
+  const piezas=JSON.parse(JSON.stringify(g.piezas||[]));
+  const p=piezas[_editPiezaIdx];
+  const nuevaCantidad=parseInt(document.getElementById('ep-cantidad').value)||p.cantidadTotal;
+  const diferencia=nuevaCantidad-p.cantidadTotal;
+  p.material=document.getElementById('ep-material').value.trim()||p.material;
+  p.cantidadTotal=nuevaCantidad;
+  p.cantidadPendiente=Math.max(0,(p.cantidadPendiente||0)+diferencia);
+  p.colorId=document.getElementById('ep-color').value;
+  p.horno=document.getElementById('ep-horno').value;
+  p.ancho=document.getElementById('ep-ancho').value;
+  p.largo=document.getElementById('ep-largo').value;
+  p.alto=document.getElementById('ep-alto').value;
+  p.diametro=document.getElementById('ep-diametro').value;
+  const fotoFile=document.getElementById('ep-foto').files[0];
+  if(fotoFile){
+    const r=new FileReader();
+    r.onload=async function(e){
+      p.fotoUrl=e.target.result;
+      await updateDoc(doc(db,'guias',_editPiezaGuiaId),{piezas});
+      cerrarModal('modal-editar-pieza');
+    };
+    r.readAsDataURL(fotoFile);
+    return;
+  }
+  await updateDoc(doc(db,'guias',_editPiezaGuiaId),{piezas});
+  cerrarModal('modal-editar-pieza');
+};
+
+window.cerrarModal=function(id){
+  document.getElementById(id).classList.remove('open');
+  _salidaGuiaId=null;_salidaPiezaIdx=null;_estadoGuiaId=null;_estadoPiezaIdx=null;_editandoGuiaId=null;_editPiezaGuiaId=null;_editPiezaIdx=null;
+};
+window.verFoto=function(url){
+  document.getElementById('foto-modal-img').src=url;
+  document.getElementById('foto-modal').classList.add('open');
+};
+
+// ─── RENDER ────────────────────────────────────────────
+function ordenarGuias(guias){
+  return guias.slice().sort(function(a,b){
+    const na=parseInt((a.numero||'').replace(/\D/g,''))||999999;
+    const nb=parseInt((b.numero||'').replace(/\D/g,''))||999999;
+    return na-nb;
+  });
+}
+
+function buildGuiaCard(g, filtroEstado){
+  const todasPiezas=g.piezas||[];
+  const piezas=todasPiezas.filter(function(p){
+    if(filtroEstado==='pendientes') return p.estado!=='entregado';
+    if(filtroEstado==='pintados') return p.estado==='pintado';
+    if(filtroEstado==='entregados') return p.estado==='entregado';
+    return true;
+  });
+  if(!piezas.length) return '';
+  let html='<div class="guia-card"><div class="guia-header">';
+  html+='<span class="guia-num">Guía '+g.numero+'</span>';
+  html+='<span class="guia-meta">'+g.cliente+'</span>';
+  html+='<span class="guia-meta" style="margin-left:auto;">'+g.fecha+'</span>';
+  html+='<button class="btn btn-sm btn-ghost" onclick="verDetalleGuia(\''+g.fireId+'\')">👁️</button>';
+  html+='<button class="btn btn-sm btn-ghost" onclick="abrirEditarGuia(\''+g.fireId+'\')">✏️</button>';
+  html+='<button class="btn btn-sm btn-danger" onclick="eliminarGuia(\''+g.fireId+'\')">🗑️</button>';
+  html+='</div><div class="guia-body">';
+  piezas.forEach(function(p){
+    const pi=todasPiezas.indexOf(p);
+    const c=colorInfo(p.colorId);
+    const pct=p.cantidadTotal>0?Math.min(100,Math.round(((p.cantidadEntregada||0)/p.cantidadTotal)*100)):0;
+    const disponible=(p.cantidadPintada||0)-(p.cantidadEntregada||0);
+    html+='<div class="pieza-row">';
+    if(p.fotoUrl) html+='<img src="'+p.fotoUrl+'" style="width:40px;height:40px;object-fit:cover;border-radius:6px;cursor:pointer;" onclick="verFoto(\''+p.fotoUrl+'\')">';
+    html+='<div class="pieza-info"><div class="pieza-nombre">'+p.material+'</div>';
+    html+='<div class="pieza-det"><span style="color:'+c.hex+'">● '+c.nombre+'</span>';
+    html+=' | Total: '+p.cantidadTotal+' | Pend: '+(p.cantidadPendiente||0)+' | Pint: '+(p.cantidadPintada||0)+' | Entregado: '+(p.cantidadEntregada||0);
+    if(p.ancho) html+=' | '+p.ancho+'×'+p.largo+'×'+p.alto+'mm';
+    if(p.diametro) html+=' | ⌀'+p.diametro+'mm';
+    if(p.salidas&&p.salidas.length){
+      html+='<br><span style="font-size:10px;">';
+      p.salidas.forEach(function(s){html+=s.fecha+': '+s.cantidad+' uds (R:'+s.remito+') ';});
+      html+='</span>';
+    }
+    html+='</div>';
+    html+='<div class="barra-bg"><div class="barra" style="width:'+pct+'%"></div></div></div>';
+    html+='<div class="pieza-acciones">';
+    html+='<span class="estado-badge estado-'+p.estado+'">'+statusLabel(p.estado)+'</span>';
+    if(p.estado!=='entregado') html+='<button class="btn btn-sm btn-ghost" onclick="abrirCambioEstado(\''+g.fireId+'\','+pi+')" style="font-size:10px;">Estado</button>';
+    if(disponible>0) html+='<button class="btn btn-sm btn-success" onclick="abrirSalida(\''+g.fireId+'\','+pi+')" style="font-size:10px;">📤</button>';
+    html+='<button class="btn btn-sm btn-ghost" onclick="abrirEdicionPieza(\''+g.fireId+'\','+pi+')" style="font-size:10px;">✏️</button>';
+    html+='</div></div>';
+  });
+  html+='</div></div>';
+  return html;
+}
+
+function renderSeccion(filtroEstado, filtroHorno, filtroCliente, filtroColor, setHornoFn, setClienteFn, setColorFn, listId, hornoId, clienteId, colorId, summaryId){
+  let guias=ordenarGuias(_guias.filter(function(g){return g.horno===_horno;}));
+  // filtros
+  if(hornoId){
+    document.getElementById(hornoId).innerHTML=['todos','estanco','continuo'].map(function(h){
+      return '<button class="'+(filtroHorno===h?'active':'')+'" onclick="'+setHornoFn+'(\''+h+'\')">'+(h==='todos'?'Todos':h==='estanco'?'🔥 Estanco':'⚙️ Continuo')+'</button>';
+    }).join('');
+  }
+  if(filtroHorno!=='todos') guias=guias.filter(function(g){return g.horno===filtroHorno;});
+  const clientes=['todos'].concat(Array.from(new Set(guias.map(function(g){return g.cliente;}).filter(Boolean))));
+  if(clienteId){
+    document.getElementById(clienteId).innerHTML=clientes.map(function(c){
+      return '<button class="'+(filtroCliente===c?'active':'')+'" onclick="'+setClienteFn+'(\''+encodeURIComponent(c)+'\')">'+(c==='todos'?'Todos los clientes':c)+'</button>';
+    }).join('');
+  }
+  if(filtroCliente!=='todos') guias=guias.filter(function(g){return g.cliente===decodeURIComponent(filtroCliente);});
+  if(colorId){
+    document.getElementById(colorId).innerHTML='<div class="color-chip '+(filtroColor==='todos'?'selected':'')+'" onclick="'+setColorFn+'(\'todos\')">Todos</div>'+_colors.map(function(c){
+      return '<div class="color-chip '+(filtroColor===c.id?'selected':'')+'" onclick="'+setColorFn+'(\''+c.id+'\')"><div class="dot" style="background:'+c.hex+'"></div>'+c.nombre+'</div>';
+    }).join('');
+  }
+  if(summaryId){
+    const todas=guias.flatMap(function(g){return (g.piezas||[]).filter(function(p){return p.estado!=='entregado';});});
+    document.getElementById(summaryId).innerHTML=
+      '<div class="schip"><div class="n">'+todas.length+'</div><div class="l">Total</div></div>'+
+      '<div class="schip"><div class="n" style="color:var(--danger)">'+todas.filter(function(p){return p.estado==='recibido'||p.estado==='en-proceso';}).length+'</div><div class="l">Sin pintar</div></div>'+
+      '<div class="schip"><div class="n" style="color:var(--success)">'+todas.filter(function(p){return p.estado==='pintado';}).length+'</div><div class="l">Pintadas</div></div>';
+  }
+  // filtrar guías con piezas en el estado correcto y color correcto
+  const html=guias.map(function(g){
+    const gFiltrada=Object.assign({},g,{piezas:(g.piezas||[]).filter(function(p){
+      if(filtroColor!=='todos'&&p.colorId!==filtroColor) return false;
+      return true;
+    })});
+    return buildGuiaCard(gFiltrada, filtroEstado);
+  }).filter(Boolean).join('');
+  document.getElementById(listId).innerHTML=html||'<div class="empty">No hay entradas en este estado</div>';
+}
+
+window.setPendHorno=function(v){fPendHorno=v;renderPendientes();};
+window.setPendCliente=function(v){fPendCliente=decodeURIComponent(v);renderPendientes();};
+window.setPendColor=function(v){fPendColor=v;renderPendientes();};
+window.setPintHorno=function(v){fPintHorno=v;renderPintados();};
+window.setPintCliente=function(v){fPintCliente=decodeURIComponent(v);renderPintados();};
+window.setPintColor=function(v){fPintColor=v;renderPintados();};
+window.setEntHorno=function(v){fEntHorno=v;renderEntregados();};
+window.setEntCliente=function(v){fEntCliente=decodeURIComponent(v);renderEntregados();};
+window.setEntColor=function(v){fEntColor=v;renderEntregados();};
+window.setGuiaCliente=function(v){fGuiaCliente=decodeURIComponent(v);renderGuias();};
+
+function renderPendientes(){renderSeccion('pendientes',fPendHorno,fPendCliente,fPendColor,'setPendHorno','setPendCliente','setPendColor','list-pendientes','fp-horno','fp-cliente','fp-color','fp-summary');}
+function renderPintados(){renderSeccion('pintados',fPintHorno,fPintCliente,fPintColor,'setPintHorno','setPintCliente','setPintColor','list-pintados','fpi-horno','fpi-cliente','fpi-color',null);}
+function renderEntregados(){renderSeccion('entregados',fEntHorno,fEntCliente,fEntColor,'setEntHorno','setEntCliente','setEntColor','list-entregados','fen-horno','fen-cliente','fen-color',null);}
+
+function renderGuias(){
+  const el=document.getElementById('list-guias');
+  if(!el) return;
+  let guias=ordenarGuias(_guias);
+  const clientes=['todos'].concat(Array.from(new Set(guias.map(function(g){return g.cliente;}).filter(Boolean))));
+  document.getElementById('fg-cliente').innerHTML=clientes.map(function(c){
+    return '<button class="'+(fGuiaCliente===c?'active':'')+'" onclick="setGuiaCliente(\''+encodeURIComponent(c)+'\')">'+(c==='todos'?'Todos':c)+'</button>';
+  }).join('');
+  if(fGuiaCliente!=='todos') guias=guias.filter(function(g){return g.cliente===fGuiaCliente;});
+  el.innerHTML=guias.map(function(g){return buildGuiaCard(g,'todas');}).filter(Boolean).join('')||'<div class="empty">No hay guías registradas</div>';
+}
+
+function renderColores(){
+  document.getElementById('color-list').innerHTML=_colors.map(function(c){
+    return '<div class="color-item"><div class="color-swatch" style="background:'+c.hex+'"></div><span style="flex:1;font-size:13px;font-weight:500;">'+c.nombre+'</span>'+
+      '<button class="btn btn-sm" onclick="toggleMuestra(\''+c.id+'\','+(!c.tieneMuestra)+')" style="background:'+(c.tieneMuestra?'var(--success)':'var(--danger)')+';color:'+(c.tieneMuestra?'#000':'#fff')+';white-space:nowrap;">'+(c.tieneMuestra?'✔ Muestra':'✕ Sin muestra')+'</button>'+
+      '<button class="btn btn-sm btn-danger" onclick="eliminarColor(\''+c.id+'\')">✕</button></div>';
+  }).join('');
+}
+
+function renderClientes(){
+  document.getElementById('cliente-list').innerHTML=_clientes.length?_clientes.map(function(c){
+    return '<div class="color-item"><span style="flex:1;font-size:13px;font-weight:500;">'+c.nombre+'</span><button class="btn btn-sm btn-danger" onclick="eliminarCliente(\''+c.id+'\')">✕</button></div>';
+  }).join(''):'<p style="font-size:13px;color:var(--text-muted);padding:8px 0;">No hay clientes.</p>';
+}
+
+function render(){
+  populateSelects();
+  renderPendientes();
+  renderPintados();
+  renderEntregados();
+  renderGuias();
+  renderColores();
+  renderClientes();
+}
+
+// ─── LISTENERS ─────────────────────────────────────────
+onSnapshot(collection(db,'guias'),function(snap){
+  _guias=snap.docs.map(function(d){return Object.assign({fireId:d.id},d.data());});
+  render();
+});
+onSnapshot(collection(db,'clientes'),function(snap){
+  _clientes=snap.docs.map(function(d){return d.data();}).sort(function(a,b){return (a.orden||0)-(b.orden||0);});
+  populateSelects();
+  renderClientes();
+});
+onSnapshot(collection(db,'colores'),async function(snap){
+  if(snap.empty){
+    for(let i=0;i<COLORES_DEFAULT.length;i++) await setDoc(doc(db,'colores',COLORES_DEFAULT[i].id),Object.assign({},COLORES_DEFAULT[i],{orden:i}));
+  } else {
+    _colors=snap.docs.map(function(d){return d.data();}).sort(function(a,b){return (a.orden||0)-(b.orden||0);});
+    render();
+    document.getElementById('loading').style.display='none';
+  }
+});
+</script>
+</body>
+</html>
